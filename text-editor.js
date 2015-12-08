@@ -3,13 +3,6 @@
 //author:			Adam Currie & Dylan O'Neill
 //first version:	2015-12-07
 //description:      online text editor using JSON and jQuery
-var xmlhttp;
-
-if (window.XMLHttpRequest){
-    xmlhttp = new XMLHttpRequest();
-}else{
-    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-}
 
 $(document).ready(function(){
     $("#files-dropdown").mouseleave(hideFilesDropdown);
@@ -113,20 +106,19 @@ function loadFileCallback(data, status){
     }
 }
 
-//Function: loadFile()
-//Desc: saves the text from "edito-text" to the server with the file name specified by the "file-name-input" element
+//Function: saveFile()
+//Desc: saves the text from "editor-text" to the server with the file name specified by the "file-name-input" element
 //parameters: 
 //returns: void
 function saveFile(){
-    var text = document.getElementById("editor-text").value;
-    var name = document.getElementById("file-name-input").value;
-    name = name.trim();
     
-    if(name != ''){
-        if (confirm("Are you sure you want to save as " + name + "?")) {
-            xmlhttp.open("POST", "text-file-management.php");
-            xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xmlhttp.send("request=saveFile&text="+text+"&name="+name);
+    var JSONobject = { "request":"saveFile", "text":document.getElementById("editor-text").value, "name":document.getElementById("file-name-input").value };
+    JSONobject.name = JSONobject.name.trim();
+    var saveInfo = JSON.stringify(JSONobject);
+        
+    if(JSONobject.name !== ''){
+        if (confirm("Are you sure you want to save as " + JSONobject.name + "?")) {
+            $.post("text-file-management.php", saveInfo);
         }
     }else{
         alert("Please specify a file name to save as.");
